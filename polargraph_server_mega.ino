@@ -32,6 +32,7 @@ is _different_ to the basic implemenation.
 #include <AccelStepper.h>
 #include <Servo.h>
 #include <EEPROM.h>
+#include "EEPROMAnything.h"
 
 /*  ===========================================================  
     These variables are common to all polargraph server builds
@@ -57,16 +58,29 @@ const int EEPROM_MACHINE_MM_PER_REV = 14;
 const int EEPROM_MACHINE_STEPS_PER_REV = 16;
 const int EEPROM_MACHINE_STEP_MULTIPLIER = 18;
 
+const int EEPROM_MACHINE_MOTOR_SPEED = 20;
+const int EEPROM_MACHINE_MOTOR_ACCEL = 22;
+const int EEPROM_MACHINE_PEN_WIDTH = 24;
+
+const long EEPROM_MACHINE_HOME_A = 26; // to 29
+const long EEPROM_MACHINE_HOME_B = 30; // to 33
+
+const int EEPROM_PENLIFT_DOWN = 34; // 2 bytes
+const int EEPROM_PENLIFT_UP = 36; // 2 bytes
+
 // Pen raising servo
 Servo penHeight;
-int const UP_POSITION = 180;
-int const DOWN_POSITION = 90;
+const int DEFAULT_DOWN_POSITION = 90;
+const int DEFAULT_UP_POSITION = 180;
+static int upPosition = DEFAULT_UP_POSITION; // defaults
+static int downPosition = DEFAULT_DOWN_POSITION;
+static int penLiftSpeed = 3; // ms between steps of moving motor
 int const PEN_HEIGHT_SERVO_PIN = 10;
 boolean isPenUp = true;
 
-int motorStepsPerRev = 400;
+int motorStepsPerRev = 800;
 float mmPerRev = 95;
-int stepMultiplier = 8;
+int stepMultiplier = 1;
 
 static float translateX = 0.0;
 static float translateY = 0.0;
@@ -80,7 +94,7 @@ static int machineHeight = 800;
 static int defaultMachineWidth = 650;
 static int defaultMachineHeight = 650;
 static int defaultMmPerRev = 95;
-static int defaultStepsPerRev = 400;
+static int defaultStepsPerRev = 800;
 static int defaultStepMultiplier = 1;
 
 String machineName = "";
@@ -193,6 +207,8 @@ const static String CMD_SETMACHINESTEPSPERREV = "C30";
 const static String CMD_SETMOTORSPEED = "C31";
 const static String CMD_SETMOTORACCEL = "C32";
 const static String CMD_SETMACHINESTEPMULTIPLIER = "C37";
+const static String CMD_SETPENLIFTRANGE = "C45";
+
 
 void setup() 
 {
