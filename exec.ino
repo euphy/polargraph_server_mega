@@ -319,7 +319,8 @@ void exec_drawBetweenPoints(float p1a, float p1b, float p2a, float p2b, int maxS
         linesegs++;
       }
     }
-    
+    Serial.print("Line segs: ");
+    Serial.println(linesegs);
     // reduce delta to one line segments' worth.
     deltaX = deltaX/linesegs;
     deltaY = deltaY/linesegs;
@@ -330,6 +331,8 @@ void exec_drawBetweenPoints(float p1a, float p1b, float p2a, float p2b, int maxS
     usingAcceleration = false;
     while (linesegs > 0)
     {
+      Serial.print("s:");
+      Serial.print(linesegs);
       // compute next new location
       c1x = c1x + deltaX;
       c1y = c1y + deltaY;
@@ -340,6 +343,8 @@ void exec_drawBetweenPoints(float p1a, float p1b, float p2a, float p2b, int maxS
     
       // do the move
       runSpeed = desiredSpeed(linesegs, runSpeed, currentAcceleration*4);
+      Serial.print(" speed:");
+      Serial.print(runSpeed);
       
 //      Serial.print("Runspeed:");
 //      Serial.println(runSpeed);
