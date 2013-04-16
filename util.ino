@@ -85,8 +85,24 @@ void changeLength(float tA, float tB)
 {
 //  Serial.println("changeLenth-float");
   lastOperationTime = millis();
+  
+//  Serial.print("ta: ");
+//  Serial.print(tA);
+//  Serial.print(", tb: ");
+//  Serial.println(tB);
 
   transform(tA,tB);
+
+//  Serial.print("transformed ta: ");
+//  Serial.print(tA);
+//  Serial.print(", tb: ");
+//  Serial.println(tB);
+
+//  Serial.print("Current position ta: ");
+//  Serial.print(motorA.currentPosition());
+//  Serial.print(", tb: ");
+//  Serial.println(motorB.currentPosition());
+
   motorA.moveTo(tA);
   motorB.moveTo(tB);
   
@@ -103,6 +119,10 @@ void changeLength(float tA, float tB)
       }
       else
       {
+//        Serial.print("moving ");
+//        Serial.print(motorA.distanceToGo());
+//        Serial.print(", ");
+//        Serial.println(motorB.distanceToGo());
         motorA.runSpeedToPosition();
         motorB.runSpeedToPosition();
       }
@@ -200,14 +220,14 @@ void reportPosition()
     Serial.print(divider(motorB.currentPosition()));
     Serial.println(CMD_END);
     
-  //  int cX = getCartesianX();
-  //  int cY = getCartesianY(cX, motorA.currentPosition());
-  //  Serial.print(OUT_CMD_CARTESIAN);
-  //  Serial.print(cX*mmPerStep);
-  //  Serial.print(COMMA);
-  //  Serial.print(cY*mmPerStep);
-  //  Serial.println(CMD_END);
-  //
+//    int cX = getCartesianX();
+//    int cY = getCartesianY(cX, motorA.currentPosition());
+//    Serial.print(OUT_CMD_CARTESIAN);
+//    Serial.print(cX*mmPerStep);
+//    Serial.print(COMMA);
+//    Serial.print(cY*mmPerStep);
+//    Serial.println(CMD_END);
+
     outputAvailableMemory();
   }
 }

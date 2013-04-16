@@ -58,6 +58,7 @@ const int EEPROM_MACHINE_MM_PER_REV = 14;
 const int EEPROM_MACHINE_STEPS_PER_REV = 16;
 const int EEPROM_MACHINE_STEP_MULTIPLIER = 18;
 
+
 const int EEPROM_MACHINE_MOTOR_SPEED = 20;
 const int EEPROM_MACHINE_MOTOR_ACCEL = 22;
 const int EEPROM_MACHINE_PEN_WIDTH = 24;
@@ -71,12 +72,12 @@ const int EEPROM_PENLIFT_UP = 36; // 2 bytes
 // Pen raising servo
 Servo penHeight;
 const int DEFAULT_DOWN_POSITION = 90;
-const int DEFAULT_UP_POSITION = 180;
+const int DEFAULT_UP_POSITION = 0;
 static int upPosition = DEFAULT_UP_POSITION; // defaults
 static int downPosition = DEFAULT_DOWN_POSITION;
 static int penLiftSpeed = 3; // ms between steps of moving motor
-int const PEN_HEIGHT_SERVO_PIN = 10;
-boolean isPenUp = true;
+int const PEN_HEIGHT_SERVO_PIN = 9;
+boolean isPenUp = false;
 
 int motorStepsPerRev = 800;
 float mmPerRev = 95;
@@ -97,14 +98,15 @@ static int defaultMmPerRev = 95;
 static int defaultStepsPerRev = 800;
 static int defaultStepMultiplier = 1;
 
+static long startLengthStepsA = 8000;
+static long startLengthStepsB = 8000;
+
 String machineName = "";
 const String DEFAULT_MACHINE_NAME = "PG01    ";
 
 float currentMaxSpeed = 800.0;
 float currentAcceleration = 400.0;
 boolean usingAcceleration = true;
-
-int startLengthMM = 800;
 
 float mmPerStep = mmPerRev / multiplier(motorStepsPerRev);
 float stepsPerMM = multiplier(motorStepsPerRev) / mmPerRev;
@@ -149,7 +151,6 @@ long lastInteractionTime = 0L;
 
 static boolean lastWaveWasTop = true;
 static boolean lastMotorBiasWasA = true;
-//static boolean drawingLeftToRight = true;
 
 //  Drawing direction
 const static byte DIR_NE = 1;
@@ -190,7 +191,6 @@ const static String CMD_CHANGEMOTORSPEED = "C03";
 const static String CMD_CHANGEMOTORACCEL = "C04";
 const static String CMD_DRAWPIXEL = "C05";
 const static String CMD_DRAWSCRIBBLEPIXEL = "C06";
-//const static String CMD_DRAWRECT = "C07";
 const static String CMD_CHANGEDRAWINGDIRECTION = "C08";
 const static String CMD_SETPOSITION = "C09";
 const static String CMD_TESTPATTERN = "C10";
@@ -209,12 +209,13 @@ const static String CMD_SETMOTORACCEL = "C32";
 const static String CMD_SETMACHINESTEPMULTIPLIER = "C37";
 const static String CMD_SETPENLIFTRANGE = "C45";
 
-
 void setup() 
 {
   Serial.begin(57600);           // set up Serial library at 57600 bps
-  Serial.print(F("POLARGRAPH ON!"));
-  Serial.println();
+  Serial.println(F("POLARGRAPH ON!"));
+  Serial.print(F("v"));
+  Serial.println(FIRMWARE_VERSION_NO);
+  
   configuration_motorSetup();
   eeprom_loadMachineSpecFromEeprom();
   configuration_setup();
@@ -224,15 +225,12 @@ void setup()
   motorB.setMaxSpeed(currentMaxSpeed);
   motorB.setAcceleration(currentAcceleration);
   
-  float startLength = ((float) startLengthMM / (float) mmPerRev) * (float) motorStepsPerRev;
-  motorA.setCurrentPosition(startLength);
-  motorB.setCurrentPosition(startLength);
+  motorA.setCurrentPosition(startLengthStepsA);
+  motorB.setCurrentPosition(startLengthStepsB);
   readyString = READY;
   comms_establishContact();
 
-  //testServoRange();
-  penlift_movePenUp();
-
+  penlift_penUp();
   delay(500);
   outputAvailableMemory();
 }
@@ -278,13 +276,13 @@ long ENDSTOP_Y_MIN_POSITION = 130;
 long motorARestPoint = 0;
 long motorBRestPoint = 0;
 
-/* Stuff for display */
-extern uint8_t SmallFont[];
-extern uint8_t BigFont[];
-int INTERRUPT_TOUCH_PIN = 0;
-volatile boolean displayTouched = false;
-volatile int touchX = 0;
-volatile int touchY = 0;
+///* Stuff for display */
+//extern uint8_t SmallFont[];
+//extern uint8_t BigFont[];
+//int INTERRUPT_TOUCH_PIN = 0;
+//volatile boolean displayTouched = false;
+//volatile int touchX = 0;
+//volatile int touchY = 0;
 
 // size and location of rove area
 long rove1x = 1000;
