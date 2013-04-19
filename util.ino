@@ -85,30 +85,58 @@ void changeLength(float tA, float tB)
 {
 //  Serial.println("changeLenth-float");
   lastOperationTime = millis();
-  
-//  Serial.print("ta: ");
-//  Serial.print(tA);
-//  Serial.print(", tb: ");
-//  Serial.println(tB);
 
   transform(tA,tB);
-
-//  Serial.print("transformed ta: ");
-//  Serial.print(tA);
-//  Serial.print(", tb: ");
-//  Serial.println(tB);
-
-//  Serial.print("Current position ta: ");
+  
+  float currSpeedA = motorA.speed();
+  float currSpeedB = motorB.speed();
+  
+//  Serial.print("A pos: ");
 //  Serial.print(motorA.currentPosition());
-//  Serial.print(", tb: ");
-//  Serial.println(motorB.currentPosition());
-
+//  Serial.print(", A target: ");
+//  Serial.println(tA);
+//  Serial.print("B pos: ");
+//  Serial.print(motorB.currentPosition());
+//  Serial.print(", B target: ");
+//  Serial.println(tB);
+  
+  
+  motorA.setSpeed(0.0);
+  motorB.setSpeed(0.0);
   motorA.moveTo(tA);
   motorB.moveTo(tB);
   
   
+  if (!usingAcceleration)
+  {
+    // The moveTo() function changes the speed in order to do a proper
+    // acceleration. This counteracts it. Ha.
+    
+    if (motorA.speed() < 0)
+      currSpeedA = -currSpeedA;
+    if (motorB.speed() < 0)
+      currSpeedB = -currSpeedB;
+
+//    Serial.print("Setting A speed ");
+//    Serial.print(motorA.speed());
+//    Serial.print(" back to ");
+//    Serial.println(currSpeedA);
+//    Serial.print("Setting B speed ");
+//    Serial.print(motorB.speed());
+//    Serial.print(" back to ");
+//    Serial.println(currSpeedB);
+      
+    motorA.setSpeed(currSpeedA);
+    motorB.setSpeed(currSpeedB);
+  }
+  
+  
   while (motorA.distanceToGo() != 0 || motorB.distanceToGo() != 0)
   {
+//    Serial.print("dA:");
+//    Serial.print(motorA.distanceToGo());
+//    Serial.print(", dB:");
+//    Serial.println(motorB.distanceToGo());
     impl_runBackgroundProcesses();
     if (currentlyRunning)
     {
@@ -119,10 +147,8 @@ void changeLength(float tA, float tB)
       }
       else
       {
-//        Serial.print("moving ");
-//        Serial.print(motorA.distanceToGo());
-//        Serial.print(", ");
-//        Serial.println(motorB.distanceToGo());
+//        Serial.print("Run speed..");
+//        Serial.println(motorA.speed());
         motorA.runSpeedToPosition();
         motorB.runSpeedToPosition();
       }
@@ -144,6 +170,7 @@ void changeLengthRelative(long tA, long tB)
   
   while (motorA.distanceToGo() != 0 || motorB.distanceToGo() != 0)
   {
+    //impl_runBackgroundProcesses();
     if (currentlyRunning)
     {
       if (usingAcceleration)
@@ -220,15 +247,15 @@ void reportPosition()
     Serial.print(divider(motorB.currentPosition()));
     Serial.println(CMD_END);
     
-//    int cX = getCartesianX();
-//    int cY = getCartesianY(cX, motorA.currentPosition());
-//    Serial.print(OUT_CMD_CARTESIAN);
-//    Serial.print(cX*mmPerStep);
-//    Serial.print(COMMA);
-//    Serial.print(cY*mmPerStep);
-//    Serial.println(CMD_END);
-
-    outputAvailableMemory();
+  //  int cX = getCartesianX();
+  //  int cY = getCartesianY(cX, motorA.currentPosition());
+  //  Serial.print(OUT_CMD_CARTESIAN);
+  //  Serial.print(cX*mmPerStep);
+  //  Serial.print(COMMA);
+  //  Serial.print(cY*mmPerStep);
+  //  Serial.println(CMD_END);
+  //
+    //outputAvailableMemory();
   }
 }
 

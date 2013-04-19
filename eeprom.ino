@@ -120,6 +120,24 @@ void eeprom_loadStepMultiplier()
   Serial.println(stepMultiplier);  
 }  
 
+void eeprom_loadSpeed()
+{
+  // load speed, acceleration
+  EEPROM_readAnything(EEPROM_MACHINE_MOTOR_SPEED, currentMaxSpeed);
+  
+  // not sure why this requires a cast to int for the comparision, but a 
+  // if (currentMaxSpeed < 1.0) wasn't catching cases where 
+  // currentMaxSpeed == 0.00, ODD.
+  if (int(currentMaxSpeed) < 1) {
+    currentMaxSpeed = 800.0;
+  }
+    
+  EEPROM_readAnything(EEPROM_MACHINE_MOTOR_ACCEL, currentAcceleration);
+  if (int(currentAcceleration) < 1) {
+    currentAcceleration = 800.0;
+  }
+}
+
 void eeprom_loadMachineSpecFromEeprom()
 {
   impl_loadMachineSpecFromEeprom();
@@ -129,24 +147,8 @@ void eeprom_loadMachineSpecFromEeprom()
   eeprom_loadStepMultiplier();
   eeprom_loadMachineName();
   eeprom_loadPenLiftRange();
+  eeprom_loadSpeed();
 
-  // load speed, acceleration
-  EEPROM_readAnything(EEPROM_MACHINE_MOTOR_SPEED, currentMaxSpeed);
-  
-  // not sure why this requires a cast to int for the comparision, but a 
-  // if (currentMaxSpeed < 1.0) wasn't catching cases where 
-  // currentMaxSpeed == 0.00, ODD.
-  if (int(currentMaxSpeed) < 1) {
-    currentMaxSpeed = 600.0;
-  }
-    
-  EEPROM_readAnything(EEPROM_MACHINE_MOTOR_ACCEL, currentAcceleration);
-  if (int(currentAcceleration) < 1) {
-    currentAcceleration = 600.0;
-  }
-
-    
-    
   // load penwidth
   EEPROM_readAnything(EEPROM_MACHINE_PEN_WIDTH, penWidth);
   if (penWidth < 0.0001)
