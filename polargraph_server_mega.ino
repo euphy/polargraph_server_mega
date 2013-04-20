@@ -38,7 +38,7 @@ is _different_ to the basic implemenation.
     These variables are common to all polargraph server builds
 =========================================================== */    
 
-const String FIRMWARE_VERSION_NO = "1.6";
+const String FIRMWARE_VERSION_NO = "1.61";
 
 // for working out CRCs
 static PROGMEM prog_uint32_t crc_table[16] = {
@@ -54,20 +54,20 @@ boolean usingCrc = false;
 const int EEPROM_MACHINE_WIDTH = 0;
 const int EEPROM_MACHINE_HEIGHT = 2;
 const int EEPROM_MACHINE_NAME = 4;
-const int EEPROM_MACHINE_MM_PER_REV = 14;
-const int EEPROM_MACHINE_STEPS_PER_REV = 16;
-const int EEPROM_MACHINE_STEP_MULTIPLIER = 18;
+const int EEPROM_MACHINE_MM_PER_REV = 14; // 4 bytes (float)
+const int EEPROM_MACHINE_STEPS_PER_REV = 18;
+const int EEPROM_MACHINE_STEP_MULTIPLIER = 20;
 
 
-const int EEPROM_MACHINE_MOTOR_SPEED = 20;
-const int EEPROM_MACHINE_MOTOR_ACCEL = 22;
-const int EEPROM_MACHINE_PEN_WIDTH = 24;
+const int EEPROM_MACHINE_MOTOR_SPEED = 22; // 4 bytes float
+const int EEPROM_MACHINE_MOTOR_ACCEL = 26; // 4 bytes float
+const int EEPROM_MACHINE_PEN_WIDTH = 30; // 4 bytes float
 
-const long EEPROM_MACHINE_HOME_A = 26; // to 29
-const long EEPROM_MACHINE_HOME_B = 30; // to 33
+const long EEPROM_MACHINE_HOME_A = 34; // 4 bytes
+const long EEPROM_MACHINE_HOME_B = 38; // 4 bytes
 
-const int EEPROM_PENLIFT_DOWN = 34; // 2 bytes
-const int EEPROM_PENLIFT_UP = 36; // 2 bytes
+const int EEPROM_PENLIFT_DOWN = 42; // 2 bytes
+const int EEPROM_PENLIFT_UP = 44; // 2 bytes
 
 // Pen raising servo
 Servo penHeight;

@@ -159,7 +159,9 @@ void exec_setMachineNameFromCommand()
 void exec_setMachineMmPerRevFromCommand()
 {
   float mmPerRev = asFloat(inParam1);
-  EEPROM_writeAnything(EEPROM_MACHINE_MM_PER_REV, mmPerRev);
+  int bytesWrit = EEPROM_writeAnything(EEPROM_MACHINE_MM_PER_REV, mmPerRev);
+//  Serial.print("Bytes writ: ");
+//  Serial.println(bytesWrit);
   eeprom_loadMachineSpecFromEeprom();
 }
 void exec_setMachineStepsPerRevFromCommand()
