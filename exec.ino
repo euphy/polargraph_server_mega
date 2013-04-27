@@ -333,6 +333,15 @@ void exec_drawBetweenPoints(float p1a, float p1b, float p2a, float p2b, int maxS
     && c1y <pageHeight-20 
     )
     {
+      Serial.print("From ");
+      Serial.print(c1x);
+      Serial.print(",");
+      Serial.print(c1y);
+      Serial.print(" to ");
+      Serial.print(c2x);
+      Serial.print(",");
+      Serial.println(c2y);
+      
     reportingPosition = false;
     float deltaX = c2x-c1x;    // distance each must move (signed)
     float deltaY = c2y-c1y;
@@ -389,11 +398,8 @@ void exec_drawBetweenPoints(float p1a, float p1b, float p2a, float p2b, int maxS
       // one line less to do!
       linesegs--;
     }
-    
-    // do the end point in case theres been some rounding errors etc
+    // reset back to "normal" operation
     reportingPosition = true;
-    changeLength(p2a, p2b);
-    
     usingAcceleration = true;
   }
   else

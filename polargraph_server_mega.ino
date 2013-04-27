@@ -38,7 +38,7 @@ is _different_ to the basic implemenation.
     These variables are common to all polargraph server builds
 =========================================================== */    
 
-const String FIRMWARE_VERSION_NO = "1.61";
+const String FIRMWARE_VERSION_NO = "1.62";
 
 // for working out CRCs
 static PROGMEM prog_uint32_t crc_table[16] = {
