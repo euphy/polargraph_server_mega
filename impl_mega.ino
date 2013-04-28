@@ -71,6 +71,8 @@ void impl_executeCommand(String &com)
     drawRandom();
   else if (com.startsWith(CMD_SET_ROVE_AREA))
     rove_setRoveArea();
+  else if (com.startsWith(CMD_SELECT_ROVE_SOURCE_IMAGE))
+    rove_setRoveSourceImage();
   else if (com.startsWith(CMD_START_TEXT))
     rove_startText();
   else if (com.startsWith(CMD_DRAW_SPRITE))
@@ -81,6 +83,8 @@ void impl_executeCommand(String &com)
     exec_changeLength();
   else if (com.startsWith(CMD_SWIRLING))
     rove_controlSwirling();
+  else if (com.startsWith(CMD_RENDER_ROVE))
+    rove_controlRender();
   else if (com.startsWith(CMD_DRAW_NORWEGIAN))
     rove_drawNorwegianFromFile();
   else if (com.startsWith(CMD_DRAW_NORWEGIAN_OUTLINE))
@@ -110,7 +114,11 @@ void impl_runBackgroundProcesses()
   }
   
   if (swirling)
+  {
     rove_swirl();
+    if (currentlyRoveRendering)
+      rove_render();
+  }
 }
 
 void impl_loadMachineSpecFromEeprom()

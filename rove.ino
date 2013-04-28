@@ -13,6 +13,7 @@ the rove area heavily.
 
 */
 
+
 void rove_setRoveArea()
 {
   rove1x = stepsPerMM * asLong(inParam1);
@@ -58,8 +59,41 @@ void rove_setRoveArea()
   Serial.print("mm, height:");
   Serial.print(roveHeight * mmPerStep);
   Serial.println("mm.");
-
 }
+
+void rove_setRoveSourceImage()
+{
+  if (inNoOfParams == 2)
+  {
+    pbmFilename = inParam1;
+    // Look up file and open it
+    if (!sd_openPbm(pbmFilename))
+    {
+      Serial.print("Couldn't open that file - ");
+      Serial.println(pbmFilename);
+    }
+    else
+    {
+      Serial.print("image size "); 
+      Serial.print(pbmWidth, DEC);
+      Serial.print(", ");
+      Serial.println(pbmHeight, DEC);
+      Serial.print("(roveWidth:");
+      Serial.print(roveWidth);
+      Serial.println(")");
+      pbmScaling = float(roveWidth) / float(pbmWidth);
+      Serial.print("Scaling factor:");
+      Serial.println(pbmScaling);
+      Serial.print("Rove width:");
+      Serial.println(roveWidth);
+      Serial.print("Image offset:");
+      Serial.println(pbmImageoffset);
+    }
+  }
+  else
+    Serial.println("Filename not supplied.");
+}
+
 void rove_startText()
 {
   if (useRoveArea)
@@ -552,7 +586,6 @@ void rove_swirl()
 {
   motorA.run();
   motorB.run();
-  
   if (motorA.distanceToGo() == 0)
   {
     long x = random(rove1x, rove1x+roveWidth);
@@ -586,6 +619,149 @@ void rove_controlSwirling()
     {
       Serial.println("Rove area must be defined to swirl.");
     }
+  }
+}
+
+void rove_controlRender()
+{
+  int p1 = asInt(inParam1);
+  if (p1 == 0)
+  {
+    currentlyRoveRendering = false;
+  }
+  else if (p1 == 1)
+  {
+    currentlyRoveRendering = true;
+    if (inNoOfParams > 2)
+    {
+      int p2 = asInt(inParam2);
+      if (p2 == ROVE_RENDER_STYLE_PENLIFT_BINARY)
+      {
+        // use the "pen lift binary" rove render style. WTF is it? 
+        roveRenderStyle = p2;
+      }
+      else
+      {
+        //  use the default style (ie none)
+        Serial.println("Rove area must be defined to swirl.");
+        roveRenderStyle = ROVE_RENDER_STYLE_NONE;
+      }
+    }
+  }
+}
+
+
+void rove_render()
+{
+  if (currentlyRoveRendering && roveRenderStyle == ROVE_RENDER_STYLE_PENLIFT_BINARY)
+  {
+    rove_renderPenLiftBinaryStyle();
+  }
+  else
+  {
+    // do nothing, that's the default
+  }
+}
+
+/*
+So this is a method that will be called regulary, in amongst a flurry of movement,
+which it may interrupt to draw a pixel or make a mark, based on a lookup of a density
+value of an underlying image.
+
+This particular style will look at the density, and attempt to make a choice about whether 
+the pen lift should be up or down while the pen is at this position.
+
+*/
+void rove_renderPenLiftBinaryStyle()
+{
+  if (useRoveArea && swirling && currentlyRoveRendering && pbmFile)
+  {
+    long timeSinceLastRenderPoll = millis() - lastRenderPoll;
+    if (timeSinceLastRenderPoll > renderPollInterval)
+    {
+      // set roveHeight so that it is the same shape as the image.  
+      roveHeight = roveWidth * pbmAspectRatio;
+      long rove2x = rove1x + roveWidth;
+      long rove2y = rove1y + roveHeight;
+      
+      float tA = motorA.currentPosition();
+      float tB = motorB.currentPosition();
+  
+      if (rove_inRoveArea(tA, tB))
+      {
+//        Serial.println("in rove area. Drawing.");
+        // draw mark
+        // Measure cartesian position at that point.
+        float cX = getCartesianXFP(tA, tB);
+        float cY = getCartesianYFP(cX, tA);
+        
+        cX -= rove1x;
+        cY -= rove1y;
+        
+  //      Serial.print("Drawing pixel on page at x:");
+  //      Serial.print(cX); //* mmPerStep);
+  //      Serial.print(", y:");
+  //      Serial.println(cY);// * mmPerStep);
+        // Scale down to cartesian position in bitmap
+        cX = cX / pbmScaling;
+        cY = cY / pbmScaling;
+  
+  //      Serial.print("Drawing pixel from file at pixel x:");
+  //      Serial.print(cX);
+  //      Serial.print(", y:");
+  //      Serial.println(cY);
+        
+        if (int(cY) > pbmHeight || int(cX) > pbmWidth)
+        {
+          // in the rove area, but couldn't find any pixels - that's weird.
+          Serial.println("Out of pixels. Cancelling");
+          currentlyRoveRendering = false;
+          swirling = false;
+          penlift_penUp();
+        }
+        else
+        {
+          // Get pixel brightness at that position
+          byte brightness = sd_getBrightnessAtPixel(cX, cY);
+          
+          if (brightness < 0)
+          {
+            Serial.println("No brightness value found. Cancelling.");
+            currentlyRoveRendering = false;
+            swirling = false;
+            penlift_penUp();
+          }
+          else
+          {
+            Serial.print("Brightness: ");
+            Serial.println(brightness);
+            // work out whether we're going to drop the pen
+            int randomNumber = random(0,255);
+            Serial.print("Random: ");
+            Serial.println(randomNumber);
+            if (randomNumber < brightness)
+            {
+              Serial.println("DROPPING PEN!!");
+              penlift_penDown();
+            }
+            else
+            {
+              Serial.println("Pen staying up!");
+              penlift_penUp();
+            }
+          }
+        }
+      }
+      else
+      {
+        penlift_penUp();
+      }
+      lastRenderPoll = millis();
+    }
+  }
+  else
+  {
+    Serial.println("Must be roving, swirling and rendering to do this.");
   }
 }
 

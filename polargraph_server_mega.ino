@@ -263,6 +263,8 @@ const static String CMD_SWIRLING = "C41";
 const static String CMD_DRAW_RANDOM_SPRITE = "C42";
 const static String CMD_DRAW_NORWEGIAN = "C43";
 const static String CMD_DRAW_NORWEGIAN_OUTLINE = "C44";
+const static String CMD_SELECT_ROVE_SOURCE_IMAGE = "C46";
+const static String CMD_RENDER_ROVE = "C47";
 
 /*  End stop pin definitions  */
 const int ENDSTOP_X_MAX = 17;
@@ -320,6 +322,7 @@ SdFile root;
 
 // the file itself
 File pbmFile;
+String pbmFilename;
 
 // information we extract about the bitmap file
 long pbmWidth, pbmHeight;
@@ -327,6 +330,15 @@ float pbmScaling = 1.0;
 int pbmDepth, pbmImageoffset;
 long pbmFileLength = 0;
 float pbmAspectRatio = 1.0;
+
+const int ROVE_RENDER_STYLE_NONE = 0;
+const int ROVE_RENDER_STYLE_PENLIFT_BINARY = 1;
+
+int roveRenderStyle = ROVE_RENDER_STYLE_NONE;
+boolean currentlyRoveRendering = false;
+
+long lastRenderPoll = 0L;
+long renderPollInterval = 200;
 
 volatile int speedChangeIncrement = 100;
 volatile int accelChangeIncrement = 100;
