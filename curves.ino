@@ -187,7 +187,8 @@ void curves_drawSpiral(long centerx, long centery, int maxRadius, int increment,
       angle1=angle2;
       radius += radiusIncrementPerSegment;
     }
-//    Serial.println("Finished drawing turn.");
+    //Serial.println("Finished drawing turn.");
+    //delay(500);
   }
   Serial.println("Finished spiral pixel.");
 }
