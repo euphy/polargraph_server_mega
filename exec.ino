@@ -196,13 +196,13 @@ void exec_setPenLiftRange()
   else if (inNoOfParams == 3)
   {
     // 3 params (C45,<downpos>,<uppos>,END) means just do a range test
-    penlift_movePen(down, up, penLiftSpeed);
-    delay(200);
     penlift_movePen(up, down, penLiftSpeed);
     delay(200);
     penlift_movePen(down, up, penLiftSpeed);
     delay(200);
     penlift_movePen(up, down, penLiftSpeed);
+    delay(200);
+    penlift_movePen(down, up, penLiftSpeed);
     delay(200);
   }
 }

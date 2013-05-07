@@ -72,7 +72,7 @@ const int EEPROM_PENLIFT_UP = 44; // 2 bytes
 // Pen raising servo
 Servo penHeight;
 const int DEFAULT_DOWN_POSITION = 90;
-const int DEFAULT_UP_POSITION = 0;
+const int DEFAULT_UP_POSITION = 180;
 static int upPosition = DEFAULT_UP_POSITION; // defaults
 static int downPosition = DEFAULT_DOWN_POSITION;
 static int penLiftSpeed = 3; // ms between steps of moving motor
