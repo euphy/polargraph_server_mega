@@ -1,12 +1,7 @@
 polargraph_server_mega
 ======================
 
-* Polargraph Server for ATMEGA2560 based arduino boards using AFMotor (Adafruit Motorshield v1).
-
-* Written by Sandy Noble
-* Released under GNU License version 3.
-* http://www.polargraph.co.uk
-* http://code.google.com/p/polargraph/
+Polargraph Server for ATMEGA2560 based arduino boards using AFMotor (Adafruit Motorshield v1).
 
 The program has a core part that consists of the following files that are common to all Polargraph Server versions:
 
@@ -30,4 +25,8 @@ contains the extended impl_executeCommand(...) which is the jumping-off point fo
 extended functions.
 
 
+Written by Sandy Noble
+Released under GNU License version 3.
+http://www.polargraph.co.uk
+http://code.google.com/p/polargraph/
 
