@@ -1,3 +1,13 @@
+THIS IS DEPRECATED AND NO LONGER SUPPORTED
+==========================================
+
+There have been a few significant changes in the _polarshield and the _a1 branches that diverge from this.
+
+- Use polargraph_server_polarshield if you have a MEGA with a Polarshield.
+- Use polargraph_server_a1 if you have anything with any other kind of motor driver (eg Adafruit).
+
+ 
+
 polargraph_server_mega
 ======================
 
